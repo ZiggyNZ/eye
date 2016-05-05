@@ -8,6 +8,8 @@ int  main()
     InitHardware();
     //We  declare  an  integer  variable  to  store  the  ADC  data
     int  adc_reading;
+    SetMotor(1,1,255);
+    SetMotor(2,2,255);
     //Reads  from  Analog  Pin 0 (A0)  through  A7
     adc_reading = ReadAnalog(0);
     //Prints  read  analog  value
