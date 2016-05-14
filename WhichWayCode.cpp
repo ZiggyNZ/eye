@@ -64,7 +64,8 @@ int main(){
 		//		motor_v = motor_v + .4*(sum); // is =ve bc of the -ve sum
 		//	} // Current code may cause the pi to zig zag around the line aslong as there's white on the camera
 		// Will integrate PID soon.
-        set_motor(1, motor_v);
+	// NEEDS TO BE TESTED
+        set_motor(1, motor_v); //  test this to make sure it works
         set_motor(2, -motor_v);
         Sleep(100000000, 0); //SLeep for 0.1 of a second
 	}
