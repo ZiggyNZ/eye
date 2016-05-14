@@ -51,14 +51,14 @@ int main(){
 		}
 		double distanceRatio = sum/1545; //Note max values = 1545, -1545
 		motor_v = 0; // if between 200 &-200 then the speed will default to 127
-		if(sum > 200){ //If line is farily to the left (will have to test line size and tinker with '200' value)
+		if(sum > 200 || sum < -200){ //If line is farily to the left (will have to test line size and tinker with '200' value)
 			//motor_v++; // increases speed of the left wheel and lowers the speed of the right
-			motor_v = motor_v + .4*(sum);
+			motor_v = motor_v * distanceRatio;
 		}
-		else if(sum < -200){ //If line is on the left
-			//motor_v--;// increases right wheel and decreases left
-			motor_v = motor_v + .4*(sum); // is =ve bc of the -ve sum
-		} // Current code may cause the pi to zig zag around the line aslong as there's white on the camera
+		//else if(sum < -200){ //If line is on the left
+		//		//motor_v--;// increases right wheel and decreases left
+		//		motor_v = motor_v + .4*(sum); // is =ve bc of the -ve sum
+		//	} // Current code may cause the pi to zig zag around the line aslong as there's white on the camera
 		// Will integrate PID soon.
         set_motor(1, 127 + motor_v);
         set_motor(2, 127 - motor_v);
