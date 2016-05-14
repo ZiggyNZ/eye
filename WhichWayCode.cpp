@@ -61,10 +61,7 @@ int main(){
 			motor_v = max_motor_v * distanceRatio; // turns the bot
 		}
 		
-		//else if(sum < -200){ //If line is on the left
-		//		//motor_v--;// increases right wheel and decreases left
-		//		motor_v = motor_v + .4*(sum); // is =ve bc of the -ve sum
-		//	} // Current code may cause the pi to zig zag around the line aslong as there's white on the camera
+	// Current code may cause the pi to zig zag around the line aslong as there's white on the camera
 		// Will integrate PID soon.
 	// NEEDS TO BE TESTED
         set_motor(1, 127 + motor_v); //  test this to make sure it works
