@@ -32,7 +32,6 @@ extern "C" int set_PWM(int chan, int value);
 
 int main(){
 	init_hardware(); //Initialise the hardware
-	int y = 110; //Initial Y co-ordinate for pixel line scan (10px below centre)
 	while(true){ //Repeat until told otherwise
 		take_picture(); //AVC takes a picture!
 		int pixelColour; //Black pixel = 0, white = 1
