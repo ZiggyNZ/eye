@@ -1,4 +1,4 @@
-//Test code for AVC wheel functions
+//Test code for direction to turn
 #include <stdio.>
 #include <time.h>
 
@@ -59,26 +59,3 @@ int main(){
 	}
 
 return 0;}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
