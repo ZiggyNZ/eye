@@ -36,6 +36,8 @@ int main(){
 		take_picture(); //AVC takes a picture!
 		int pixelColour; //Black pixel = 0, white = 1
 		int sum = 0; //Will determine whether the line is on the left or right side of the image (or even there at all)
+		double motor_v;
+		double max_motor_v = 127;
 		
 		for(x=0, x<320, x++){ //Camera is 320 long x 240 high, this will scan the centre line
 			int r = get_pixel(120, x, 1); //Scan pixel for red value
@@ -52,11 +54,11 @@ int main(){
 		}
 		
 		double distanceRatio = sum/1545; //Note max values = 1545, -1545
-		motor_v = 127; // if sum is between 200 &-200 then the speed will default to 127
+		motor_v = 0; // if sum is between 200 &-200 then the speed will default to 127
 		
 		if(sum > 200 || sum < -200){ //If line is not withen the threshold(will have to test line size and tinker with '200' value)
 			//motor_v++; // increases speed of the left wheel and lowers the speed of the right
-			motor_v = motor_v * distanceRatio; // turns the bot
+			motor_v = max_motor_v * distanceRatio; // turns the bot
 		}
 		
 		//else if(sum < -200){ //If line is on the left
@@ -65,8 +67,8 @@ int main(){
 		//	} // Current code may cause the pi to zig zag around the line aslong as there's white on the camera
 		// Will integrate PID soon.
 	// NEEDS TO BE TESTED
-        set_motor(1, motor_v); //  test this to make sure it works
-        set_motor(2, -motor_v);
+        set_motor(1, 127 + motor_v); //  test this to make sure it works
+        set_motor(2, 127 - motor_v);
         Sleep(100000000, 0); //SLeep for 0.1 of a second
 	}
 
