@@ -49,6 +49,7 @@ int main(){
 			int value = (x - 160) * pixelColour; //If white pixel on left, will be negative, if on right, will be positive
 			sum += value; //Negative = line on left of centre, positive = line on right of centre (magnitude of number represents the distance away from centre)		
 		}
+		double distanceRatio = sum/1545; //Note max values = 1545, -1545
 		motor_v = 0; // if between 200 &-200 then the speed will default to 127
 		if(sum > 200){ //If line is farily to the left (will have to test line size and tinker with '200' value)
 			//motor_v++; // increases speed of the left wheel and lowers the speed of the right
