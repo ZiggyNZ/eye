@@ -49,11 +49,10 @@ int main(){
 			sum += value;}} //Negative = line on left of centre, positive = line on right of centre (magnitude of number represents the distance away from centre)
 
 		sum /= 320; //Average the sum value and we should get around the pixel at the centre of the line
-		int proportion = sum / 45; //Highest testing value was 41 ish so 45 adds some leway for error
-		motorChange = 122 * proportion;
-		set_motor(1, 122 + motorChange);
-		set_motor(2, -122 + motorChange);
-		Sleep(0, 100000000); //SLeep for 0.1 of a second
+		motorChange = sum*3; //Was getting return values of around 40 so we are using raw values instead of porportional for meantime
+		set_motor(1, 122 - motorChange);
+		set_motor(2, -122 - motorChange);
+		Sleep(0, 10000000); //SLeep for 0.1 of a second
 	}
 set_motor(1, 0);
 set_motor(2, 0);
