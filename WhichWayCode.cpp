@@ -1,4 +1,4 @@
-//Test code for direction to turn
+//Test code for AVC wheel functions
 #include <stdio.>
 #include <time.h>
 
@@ -32,41 +32,52 @@ extern "C" int set_PWM(int chan, int value);
 
 int main(){
 	init_hardware(); //Initialise the hardware
+
 	while(true){ //Repeat until told otherwise
 		take_picture(); //AVC takes a picture!
+		int motorChange = 0;
 		int pixelColour; //Black pixel = 0, white = 1
 		int sum = 0; //Will determine whether the line is on the left or right side of the image (or even there at all)
-		double motor_v;
-		double max_motor_v = 127;
-		
-		for(x=0, x<320, x++){ //Camera is 320 long x 240 high, this will scan the centre line
-			int r = get_pixel(120, x, 1); //Scan pixel for red value
-			int g = get_pixel(120, x, 2); //green pixel
-			int b = get_pixel(120, x, 3); //blue pixel
-			if(r > 150 && g > 150 && b > 150){ //If a white pixel is detected (for now assuming white = anything over 150)
-				pixelColour = 1;
-			}
-			else{ //If white pixel is not detected, consider it a black pixel
-				pixelColour = 0;
-			}
-			int value = (x - 160) * pixelColour; //If white pixel on left, will be negative, if on right, will be positive
-			sum += value; //Negative = line on left of centre, positive = line on right of centre (magnitude of number represents the distance away from centre)		
-		}
-		
-		double distanceRatio = sum/1545; //Note max values = 1545, -1545
-		motor_v = 0; // if sum is between 200 &-200 then the speed will default to 127
-		
-		if(sum > 200 || sum < -200){ //If line is not withen the threshold(will have to test line size and tinker with '200' value)
-			//motor_v++; // increases speed of the left wheel and lowers the speed of the right
-			motor_v = max_motor_v * distanceRatio; // turns the bot
-		}
-		
-	// Current code may cause the pi to zig zag around the line aslong as there's white on the camera
-		// Will integrate PID soon.
-	// NEEDS TO BE TESTED
-        set_motor(1, 127 + motor_v); //  test this to make sure it works
-        set_motor(2, 127 - motor_v);
-        Sleep(100000000, 0); //SLeep for 0.1 of a second
-	}
 
+		for(x=0, x<320, x++){ //Camera is 320 long x 240 high, this will scan the centre line
+			int r = get_pixel(x, 120, 1); //Red pixel values had the biggest difference between the white/black (found this from testing)
+			if(r > 100){ //Values ranged from around 0 to 160 (rather than expected 0 to 255)
+				pixelColour = 1;}
+			else{ //If white pixel is not detected, consider it a black pixel
+				pixelColour = 0;}
+			int value = (x - 160) * pixelColour; //If white pixel on left, will be negative, if on right, will be positive
+			sum += value;}} //Negative = line on left of centre, positive = line on right of centre (magnitude of number represents the distance away from centre)
+
+		sum /= 320; //Average the sum value and we should get around the pixel at the centre of the line
+		int proportion = sum / 45; //Highest testing value was 41 ish so 45 adds some leway for error
+		motorChange = 122 * proportion;
+		set_motor(1, 122 + motorChange);
+		set_motor(2, -122 + motorChange);
+		Sleep(0, 100000000); //SLeep for 0.1 of a second
+	}
+set_motor(1, 0);
+set_motor(2, 0);
 return 0;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
