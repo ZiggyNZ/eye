@@ -4,6 +4,7 @@
 
 //External imports
 extern "C" int init_hardware();
+//extern "C" int init(int d_lev);
 
 extern "C" int take_picture();
 extern "C" char get_pixel(int row, int col, int color);
@@ -16,7 +17,7 @@ extern "C" void set_pixel(int col, int row, char red,char green,char blue);
 //extern "C" int display_picture(int delay_sec,int delay_usec);
 //extern "C" int save_picture(char filename[5]);
 
-extern "C" int set_motor(int motor,int speed);
+extern "C" int set_motor(int motor,int speed); //Motor 1 = right wheel
 
 extern "C" int read_analog(int ch_adc);
 extern "C" int Sleep(int sec, int usec);
@@ -36,6 +37,10 @@ int main(){
 	double oldLineX = 0; //Remember previous position of the line
 	int pixelColour; //Black pixel = 0, white = 1
 	double changeDifferential; //Where we are now in coparison to where we just were
+	int forwardTimeUsec = 500000;//Wait for x amount of time
+	int forwardTimeSec = 0;
+	int turnTimeUsec = 0;
+	int turnTimeSec = 1;
 
 	init(1); //Sets up the RPi hardware
    	connect_to_server("130.195.6.196", 1024); // connects to the server
@@ -52,8 +57,14 @@ int main(){
 		double changeProportion = 0; //Defualt motor change = no change
 		double lineWidth = 0; //Keep track of how many pixels wide the line is
 		double sum = 0; //Will determine whether the line is on the left or right side of the image (or even there at all)
+		int pixelLeft = 0;
+   		int pixelRight = 0;
+   		int pixelLeftTotal = 0;
+   		int pixelRightTotal = 0;
+   		bool leftRurn = false;
+   		bool rightTurn = false;
 
-		for(x=0, x<320, x++){ //Camera is 320 long x 240 high, this will scan the centre line
+		for(int x=0, x<320, x++){ //Camera is 320 long x 240 high, this will scan the centre line
 			int r = get_pixel(x, 120, 1); //Red pixel values had the biggest difference between the white/black (found this from testing)
 			if(r > 100){ //Values ranged from around 0 to 160 (rather than expected 0 to 255)
 				pixelColour = 1;}
@@ -64,17 +75,56 @@ int main(){
 			int value = (x - 160) * pixelColour; //If white pixel on left, will be negative, if on right, will be positive
 			sum += value;} //Negative = line on left of centre, positive = line on right of centre (magnitude of number represents the distance away from centre)
 
-
 		lineX = sum/lineWidth; //Will give centre of line x co-ordinate (between -160 and 160)
 		changeProportion = lineX/160; //Line pixel position (which cannot be over 160 pixels) divided by 160 (the max possible value)
 		changeDifferential = lineX - oldLineX;
 
+		if(lineWidth < 5){ //If no lines are detected
+			set_motor(1, -100); //Turn left
+			set_motor(2, -100);
+		}
+		else{ //If there is a line in view
 		set_motor(1, 100 - (changeProportion*100));
 		set_motor(2, -100 - (changeProportion*100));
-		oldLineX = lineX;
+		oldLineX = lineX;}	
+
+		if(lineX < 50 && lineX > -50){//If we are on line (or close enough) then scan for alternate paths
+			for(int y=0, y<60, y++){
+				int right = get_pixel(60 , 180 + y, 1); //Scan line (like in diagram)
+				int left = get_pixel(260 , 180 + y, 1);
+				if(right > 100){
+					pixelRight = 1;} //Same ideas as the line following code
+				if(left > 100){
+					pixelLeft = 1;}
+				pixelLeftTotal += pixelLeft;
+				pixelRightTotal += pixelRight;
+			}
+			if(pixelLeftTotal > 20){//If left side is detecting a line on the left
+				leftTurn = true; //Turn left
+
+			}
+			else if(pixelRightTotal > 20 && pixelLeftTotal < 5){//If line is detected on left and there is no choice to turn left
+				rightTurn = true;
+			}
+			if(leftTurn){
+				set_motor(1, 100);
+				set_motor(1, -100); //Forwards a bit
+				Sleep(forwardTimeSec, forwardTimeUsec);
+
+				set_motor(1, 100);
+				set_motor(2, 100);//Now turn
+				Sleep(turnTimeSec, turnTimeUsec);
+			}
+			if(rightTurn){
+				set_motor(1, 100);
+				set_motor(1, -100);//Forwards a bit
+				Sleep(forwardTimeSec, forwardTimeUsec);
+
+				set_motor(1, -100);
+				set_motor(2, -100);//Now turn
+				Sleep(turnTimeSec, turnTimeUsec);
+			}	
+		}
 		Sleep(0, 10000000); //SLeep for 0.1 of a second
 	}
-
-set_motor(1, 0);
-set_motor(2, 0);
 return 0;}
