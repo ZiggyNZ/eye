@@ -4,7 +4,7 @@
 
 //External imports
 extern "C" int init_hardware();
-//extern "C" int init(int d_lev);
+extern "C" int init(int d_lev);
 
 extern "C" int take_picture();
 extern "C" char get_pixel(int row, int col, int color);
