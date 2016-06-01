@@ -1,10 +1,9 @@
-//Test code for AVC wheel functions
+//Code for AVC wheel functions
 #include <stdio.>
 #include <time.h>
 
 //External imports
 extern "C" int init_hardware();
-//extern "C" int init(int d_lev);
 
 extern "C" int take_picture();
 extern "C" char get_pixel(int row, int col, int color);
@@ -26,9 +25,10 @@ extern "C" int write_digital(int chan,char level);
 extern "C" int read_digital(int chan);
 extern "C" int set_PWM(int chan, int value);
 
-//extern "C" int connect_to_server( char server_addr[15],int port);
-//extern "C" int send_to_server(char message[24]);
-//extern "C" int receive_from_server(char message[24]);
+extern "C" int init(int d_lev);
+extern "C" int connect_to_server( char server_addr[15],int port);
+extern "C" int send_to_server(char message[24]);
+extern "C" int receive_from_server(char message[24]);
 
 int main(){
 	init_hardware(); //Initialise the hardware
@@ -36,6 +36,15 @@ int main(){
 	double oldLineX = 0; //Remember previous position of the line
 	int pixelColour; //Black pixel = 0, white = 1
 	double changeDifferential; //Where we are now in coparison to where we just were
+
+	init(1); //Sets up the RPi hardware
+   	connect_to_server("130.195.6.196", 1024); // connects to the server
+   	send_to_server("Please"); // sends a request for the password to the server
+   	char message[24]; //receives the password from the server
+   	recieve_from_server(message);
+   	prinf("%s", message); // prints out the password that is recieved
+   	send_to_server(message); // sends the password back to the server to open the gate
+   	Sleep(5, 0); //Wait 5 seconds
 
 	while(true){ //Repeat until told otherwise
 		//update_screen(); //For testing purposes
@@ -65,29 +74,7 @@ int main(){
 		oldLineX = lineX;
 		Sleep(0, 10000000); //SLeep for 0.1 of a second
 	}
+
 set_motor(1, 0);
 set_motor(2, 0);
 return 0;}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
