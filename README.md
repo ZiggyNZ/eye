@@ -1,7 +1,3 @@
 # Team Eye
-Team 5; Olly, Sean, Ben, Taylor, and Other Guy
-10.140.69.86
- 
-RPi IP
- 
-Heil Hydra!
+Team 5; Ollie, Sean, Ben, and Taylor
+IP of pi: 10.140.69.86
